@@ -1,0 +1,9 @@
+# Core dependencies will be added based on specific scraping requirements
+# Common web scraping libraries may include:
+# - requests or httpx for HTTP requests
+# - beautifulsoup4, lxml, or scrapy for HTML parsing
+# - pandas for data manipulation
+# - selenium for JavaScript-heavy sites
+
+# Development tools
+pytest>=7.4.0
