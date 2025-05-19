@@ -74,7 +74,7 @@ class TeamsPage:
                                 
                                 for link in links:
                                     href = link.get_attribute('href')
-                                    if href and '/team/' in href:
+                                    if href and '/team/' in href and '/team/0/' not in href:
                                         team_info = {
                                             'name': link.text.strip(),
                                             'url': href
@@ -82,6 +82,8 @@ class TeamsPage:
                                         if team_info['name']:  # Only add if name is not empty
                                             teams.append(team_info)
                                             logger.debug(f"Found team: {team_info['name']}")
+                                    elif href and '/team/0/' in href:
+                                        logger.debug(f"Skipping null team placeholder: {href}")
                                             
                         except Exception as e:
                             logger.debug(f"Error processing row {row_idx} in table {table_idx}: {e}")

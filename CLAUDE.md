@@ -23,7 +23,7 @@ This is a Python web scraping project for extracting team administrator (Joukkue
 ### Stages
 1. **Categories**: ✅ Scrape league/cup URLs from categories page with filters (implemented, handles cookie consent)
 2. **Teams**: ✅ Extract team URLs from each league's tables page (implemented)
-3. **Contact**: ⏳ Scrape administrator contact info from team pages (not implemented yet)
+3. **Contact**: ✅ Scrape administrator contact info from team pages (implemented)
 
 ## Architecture
 

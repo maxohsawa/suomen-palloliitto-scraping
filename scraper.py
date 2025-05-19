@@ -10,6 +10,7 @@ import json
 
 from src.scrapers.categories_scraper import CategoriesScraper
 from src.scrapers.teams_scraper import TeamsScraper
+from src.scrapers.contact_scraper import ContactScraper
 
 # Set up logging to both console and file
 def setup_logging():
@@ -124,7 +125,46 @@ def run_teams(config):
 def run_contact(config):
     """Run the contact stage."""
     print("\nRunning Contact stage...")
-    print("Contact stage not yet implemented.")
+    print("This will extract administrator contact information from all teams.")
+    
+    # Check if teams data exists
+    teams_file = Path("data/intermediate/teams.json")
+    if not teams_file.exists():
+        print("\nError: No teams data found. Please run Stage 2 first.")
+        return
+    
+    if input("\nProceed? (y/n): ").lower() != 'y':
+        print("Cancelled.")
+        return
+    
+    print("\nStarting contact extraction...")
+    logger.info("Starting Stage 3: Contact extraction")
+    
+    try:
+        config_path = Path("config/scraper.json")
+        with open(config_path) as f:
+            scraper_config = json.load(f)
+        
+        scraper = ContactScraper(scraper_config)
+        output_file = scraper.scrape()
+        
+        print(f"\nContact data saved to: {output_file}")
+        
+        # Show summary
+        import csv
+        with open(output_file, 'r', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            rows = list(reader)
+        
+        print(f"Total unique administrators found: {len(rows)}")
+        print("\nFirst 5 administrators:")
+        for i, row in enumerate(rows[:5], 1):
+            print(f"{i}. {row['administrator_name']} - {row['email']}")
+        
+    except Exception as e:
+        logger.error(f"Stage 3 failed: {e}", exc_info=True)
+        print(f"\nError: {e}")
+        print(f"Check the log file for details: {log_file}")
 
 
 def run_all_stages(config):
