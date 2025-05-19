@@ -9,6 +9,7 @@ from pathlib import Path
 import json
 
 from src.scrapers.categories_scraper import CategoriesScraper
+from src.scrapers.teams_scraper import TeamsScraper
 
 # Set up logging to both console and file
 def setup_logging():
@@ -82,7 +83,42 @@ def run_categories(config):
 def run_teams(config):
     """Run the teams stage."""
     print("\nRunning Teams stage...")
-    print("Teams stage not yet implemented.")
+    print("This will extract team URLs from all collected leagues.")
+    
+    # Check if leagues data exists
+    leagues_file = Path("data/intermediate/leagues.json")
+    if not leagues_file.exists():
+        print("\nError: No leagues data found. Please run Stage 1 first.")
+        return
+    
+    if input("\nProceed? (y/n): ").lower() != 'y':
+        print("Cancelled.")
+        return
+    
+    print("\nStarting teams extraction...")
+    logger.info("Starting Stage 2: Teams extraction")
+    
+    try:
+        config_path = Path("config/scraper.json")
+        with open(config_path) as f:
+            scraper_config = json.load(f)
+        
+        scraper = TeamsScraper(scraper_config)
+        output_file = scraper.scrape()
+        
+        print(f"\nTeams data saved to: {output_file}")
+        
+        # Show summary
+        with open(output_file) as f:
+            data = json.load(f)
+        
+        print(f"Total teams collected: {data.get('total_teams', 0)}")
+        print(f"Leagues processed: {data.get('leagues_processed', 0)}")
+        
+    except Exception as e:
+        logger.error(f"Stage 2 failed: {e}", exc_info=True)
+        print(f"\nError: {e}")
+        print(f"Check the log file for details: {log_file}")
 
 
 def run_contact(config):
@@ -130,12 +166,14 @@ def view_saved_data():
     else:
         print("\nNo categories data found. Run stage 1 first.")
     
-    # Check for teams data (will be added later)
+    # Check for teams data
     teams_file = Path("data/intermediate/teams.json")
     if teams_file.exists():
         with open(teams_file) as f:
             data = json.load(f)
-        print(f"\nTeams: {len(data.get('teams', []))} teams found")
+        print(f"\nTeams: {data.get('total_teams', 0)} teams found")
+        print(f"Last run: {data.get('timestamp', 'Unknown')}")
+        print(f"Leagues processed: {data.get('leagues_processed', 0)}")
     
     # Check for contacts data
     contacts_file = Path("data/contacts.csv")
