@@ -9,16 +9,18 @@ This is a Python web scraping project for extracting team administrator (Joukkue
 ## Commands
 
 ### Setup
-- Create virtual environment: `python3 -m venv .venv`
-- Activate virtual environment (macOS/Linux): `source .venv/bin/activate`
+- Create virtual environment: `python3 -m venv venv`
+- Activate virtual environment (macOS/Linux): `source venv/bin/activate`
 - Install dependencies: `pip install -r requirements.txt`
 
 ### Running the Scraper
-- Run all stages: `python src/cli.py`
+- Run all stages: `python src/cli.py` (Note: Only categories stage is fully implemented in CLI)
 - Run specific stage: `python src/cli.py --stage categories`
 - With custom delay: `python src/cli.py --delay 3.5`
 - Resume from checkpoint: `python src/cli.py --resume`
 - Dry run: `python src/cli.py --dry-run`
+
+**Note**: While all three scrapers (categories, teams, contact) are implemented, the CLI currently only imports and runs the categories scraper. The teams and contact stages show "not yet implemented" messages.
 
 ### Stages
 1. **Categories**: ✅ Scrape league/cup URLs from categories page with filters (implemented, handles cookie consent)
@@ -49,18 +51,16 @@ This is a Python web scraping project for extracting team administrator (Joukkue
 - `src/`
   - `cli.py` - Command-line interface for staged execution
   - `main.py` - Legacy entry point (kept for backwards compatibility)
-  - `browser.py` - Selenium browser setup and management
   - `pages/` - Page object models
     - `categories_page.py` - Categories page interactions
-    - `league_page.py` - League/cup tables page interactions
-    - `team_page.py` - Team players page interactions
+    - `teams_page.py` - League/cup tables page interactions
+    - `contact_page.py` - Team players page interactions
   - `scrapers/` - Scraping logic for each stage
     - `categories_scraper.py` - Stage 1 implementation
     - `teams_scraper.py` - Stage 2 implementation
     - `contact_scraper.py` - Stage 3 implementation
   - `utils/`
-    - `data_processor.py` - Data deduplication and CSV generation
-    - `checkpoint.py` - Resume capability management
+    - `browser.py` - Selenium browser setup and management
 - `config/`
   - `scraper.json` - Configuration for filters, delays, and output paths
 - `data/` - Output directory (gitignored)
@@ -71,7 +71,8 @@ This is a Python web scraping project for extracting team administrator (Joukkue
 
 - Staged approach reduces server load and allows partial re-runs
 - Intermediate data stored as JSON for easy parsing
-- Checkpointing allows resuming within stages
 - Configuration file controls filters, delays, and paths
-- Browser runs headless by default (configurable)
+- Browser runs non-headless by default (see config/scraper.json)
 - Default delay between requests is 2 seconds
+- The data_processor.py and checkpoint.py files mentioned do not exist in the utils folder
+- Teams and contact stages in CLI are marked as TODO but the actual scrapers are implemented
